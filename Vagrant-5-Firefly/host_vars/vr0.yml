@@ -1,0 +1,28 @@
+#############################################################################
+# vr0 Configuration File
+#
+# Options:
+# - hostname: the hostname of the VM
+# - interfaces list:
+#   + interface: Junos interface name
+#   + description: Interface description
+#   + address: IP address of the interface
+#   + mask: bit count of the network mask
+#
+# - instances list: Set to 'FALSE' because routing instances are not needed.
+#############################################################################
+host_name: vr0
+interfaces:
+    - interface: ge-0/0/1
+      description: to_vsrx01_ge001
+      address: 10.1.1.2
+      mask: 24
+    - interface: ge-0/0/2
+      description: to_vsrx02_ge001
+      address: 10.1.2.2
+      mask: 24
+    - interface: ge-0/0/3
+      description: to_vsrx03_ge001
+      address: 10.1.3.2
+      mask: 24
+instances: FALSE

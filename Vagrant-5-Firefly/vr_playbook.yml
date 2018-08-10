@@ -1,0 +1,23 @@
+- name: Build and deploy vr configuration
+  hosts: vr0,vr1
+  connection: local
+  gather_facts: no
+  roles:
+    - Juniper.junos
+  tasks:
+    - name: Build configuration
+      template: src=vr_template.j2 dest={{ playbook_dir }}/Configs/{{ inventory_hostname }}.conf
+
+    - name: Deploy config to vr device ... please wait
+      junos_install_config:
+        host={{ ansible_ssh_host }}
+        port={{ ansible_ssh_port }}
+        user=root
+        passwd=Juniper
+        comment="configured by ansible"
+        file={{ playbook_dir }}/Configs/{{ inventory_hostname }}.conf
+#        logfile=changes.log
+
+
+
+

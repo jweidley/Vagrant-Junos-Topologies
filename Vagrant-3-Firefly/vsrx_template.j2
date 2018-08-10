@@ -1,0 +1,72 @@
+system {
+    host-name {{ inventory_hostname }};
+    login {
+        user lab {
+            uid 2001;
+            class super-user;
+            authentication {
+                encrypted-password "$1$c34IRxmV$B.csXCZW3Wab63GhIkUn7."; ## SECRET-DATA
+            }
+        }
+    }
+    services {
+        ssh {
+            root-login allow;
+        }
+        netconf {
+            ssh;
+        }
+    }
+}
+interfaces {
+{% for int in interfaces %}
+    {{ int.interface }} {
+        unit 0 {
+            description "{{ int.description }}";
+            family inet {
+                address {{ int.address }}/{{ int.mask }};
+            }
+        }
+    }
+{% endfor %}
+}
+routing-options {                       
+    static {
+        route 0.0.0.0/0 next-hop {{ default_gw }};
+    }
+}
+security {
+    policies {
+        from-zone untrust to-zone trust {
+            policy default-deny {       
+                match {                 
+                    source-address any; 
+                    destination-address any;
+                    application any;    
+                }                       
+                then {                  
+                    permit;               
+                }                       
+            }                           
+        }                               
+    }  
+    zones {                             
+{% for zone in security.zones %}
+        security-zone {{ zone.name }} {
+            tcp-rst;
+            host-inbound-traffic {
+                system-services {
+                    all;
+                }
+                protocols {
+                    all;
+                }
+            }
+            interfaces {
+                {{ zone.interface }}.0;
+            }
+        }
+{% endfor %}
+    }                                   
+}
+

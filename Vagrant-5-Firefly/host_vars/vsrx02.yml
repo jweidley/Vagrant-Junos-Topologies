@@ -1,0 +1,35 @@
+#############################################################################
+# vsrx02 Configuration File
+#
+# Options:
+# - hostname: the hostname of the VM
+# - default_gw: Default gateway
+#
+# - interfaces list:
+#   + interface: Junos interface name
+#   + description: Interface description
+#   + address: IP address of the interface
+#   + mask: bit count of the network mask
+#
+# - security.zones dictionary:
+#   + interface: Interface name
+#   + name: Security zone name
+#############################################################################
+host_name: vsrx02
+default_gw: 10.1.2.2
+interfaces:
+    - interface: ge-0/0/1
+      description: to_vr0_ge002
+      address: 10.1.2.1
+      mask: 24
+    - interface: ge-0/0/2
+      description: to_vr1_ge002
+      address: 192.168.2.1
+      mask: 24
+security:
+    zones:
+      - interface: ge-0/0/1
+        name: untrust
+      - interface: ge-0/0/2
+        name: trust
+

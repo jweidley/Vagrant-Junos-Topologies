@@ -1,0 +1,74 @@
+Vagrant.configure(2) do |config|
+  config.vm.box = "juniper/ffp-12.1X47-D15.4"
+
+  config.vm.provider "virtualbox" do |vb|
+    vb.gui = true
+    vb.memory = "1024"
+  end
+
+  config.vm.define "vsrx01" do |vsrx01|
+    vsrx01.vm.host_name = "vsrx01"
+    vsrx01.vm.network "forwarded_port", guest: 22, host: 2221, id: "ssh"
+    vsrx01.vm.network "private_network",
+                      virtualbox__intnet: "vr0-vsrx01"
+    vsrx01.vm.network "private_network",
+                      virtualbox__intnet: "vr1-vsrx01"
+    vsrx01.vm.provision "ansible" do |ansible|
+      ansible.playbook = "vsrx_playbook.yml" 
+    end
+  end
+
+  config.vm.define "vsrx02" do |vsrx02|
+    vsrx02.vm.host_name = "vsrx02"
+    vsrx02.vm.network "forwarded_port", guest: 22, host: 2222, id: "ssh"
+    vsrx02.vm.network "private_network",
+                      virtualbox__intnet: "vr0-vsrx02"
+    vsrx02.vm.network "private_network",
+                      virtualbox__intnet: "vr1-vsrx02"
+    vsrx02.vm.provision "ansible" do |ansible|
+      ansible.playbook = "vsrx_playbook.yml" 
+    end
+  end
+
+  config.vm.define "vsrx03" do |vsrx03|
+    vsrx03.vm.host_name = "vsrx03"
+    vsrx03.vm.network "forwarded_port", guest: 22, host: 2223, id: "ssh"
+    vsrx03.vm.network "private_network",
+                      virtualbox__intnet: "vr0-vsrx03"
+    vsrx03.vm.network "private_network",
+                      virtualbox__intnet: "vr1-vsrx03"
+    vsrx03.vm.provision "ansible" do |ansible|
+      ansible.playbook = "vsrx_playbook.yml" 
+    end
+  end
+
+  config.vm.define "vr0" do |vr0|
+    vr0.vm.box = "juniper/ffp-12.1X47-D15.4-packetmode"
+    vr0.vm.host_name = "vr0"
+    vr0.vm.network "forwarded_port", guest: 22, host: 2224, id: "ssh"
+    vr0.vm.network "private_network",
+                      virtualbox__intnet: "vr0-vsrx01"
+    vr0.vm.network "private_network",
+                      virtualbox__intnet: "vr0-vsrx02"
+    vr0.vm.network "private_network",
+                      virtualbox__intnet: "vr0-vsrx03"
+    vr0.vm.provision "ansible" do |ansible|
+      ansible.playbook = "vr_playbook.yml" 
+    end
+  end
+
+  config.vm.define "vr1" do |vr1|
+    vr1.vm.box = "juniper/ffp-12.1X47-D15.4-packetmode"
+    vr1.vm.host_name = "vr1"
+    vr1.vm.network "forwarded_port", guest: 22, host: 2225, id: "ssh"
+    vr1.vm.network "private_network",
+                      virtualbox__intnet: "vr1-vsrx01"
+    vr1.vm.network "private_network",
+                      virtualbox__intnet: "vr1-vsrx02"
+    vr1.vm.network "private_network",
+                      virtualbox__intnet: "vr1-vsrx03"
+    vr1.vm.provision "ansible" do |ansible|
+      ansible.playbook = "vr_playbook.yml" 
+    end
+  end
+end
